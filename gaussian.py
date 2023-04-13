@@ -1,5 +1,6 @@
-import numpy as np
 import math
+
+import numpy as np
 
 matrix_size = 3
 filter = np.zeros((matrix_size,matrix_size), np.float32)

@@ -5,7 +5,7 @@ import numpy as np
 
 
 def create_filter(size, sigma):
-    filter = np.zeros((size,size), np.float32)
+    filter = np.zeros((size,size, 3), np.float32)
     for x in range((-size//2),size//2+1):
         for y in range(-size//2,size//2+1):
             # gaussian calculation 
@@ -22,7 +22,7 @@ def get_image(image_name):
     image = cv.imread(image_name)
     return image
 
-def guassian_blur(image, filter):
+def convolution(image, filter):
     filter_size = filter.shape[0] 
     filter_sum = np.sum(filter)
 
@@ -37,26 +37,27 @@ def guassian_blur(image, filter):
             # get submatrix of the image
             subimage = image[y-border:y+border+1, x-border:x+border+1]
 
-            # multiply the subimage with the filter
-            subimage = subimage * filter/filter_sum
+            subimage = subimage * filter
+            
+            # I have no clue why these have to be summed twice, but it works
+            # 😕😕😕
+            new_pixel = np.sum(subimage, axis=0)
+            new_pixel = np.sum(new_pixel, axis=0)
+            
+            new_pixel = new_pixel / filter_sum
 
-            # sum the values of the subimage
-            # subimage = np.sum(subimage)
-
-            # set the pixel to the new value
-            for color in range(3):
-                new_image[y][x][color] = np.sum(subimage[color])
-            cv.waitKey(0)
+            # set the new pixel value
+            new_image[y][x] = new_pixel
 
     return new_image
 
 
 def main():
-    filter = create_filter(3, 1.5)
-    image = get_image("tripod.jpg")
+    filter = create_filter(9, 1.5)
+    image = get_image("gaussian-original.png")
 
     # blur the image with the filter
-    blurred_image = guassian_blur(image, filter)
+    blurred_image = convolution(image, filter)
 
     # show the blurred image
     cv.imshow("blurred image", blurred_image)
