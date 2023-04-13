@@ -1,6 +1,8 @@
-import numpy as np
 import math
+
 import cv2 as cv
+import numpy as np
+
 
 def create_filter(size, sigma):
     filter = np.zeros((size,size), np.float32)
